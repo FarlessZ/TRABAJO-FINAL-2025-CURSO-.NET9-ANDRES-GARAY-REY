@@ -4,13 +4,11 @@
 
 - **talleres list page : Mejora visual**  
 
-- **Catalogo talleres:**  
+- **Catalogo talleres:Mejora visual botones**  
 
-- **Mejora visual botones**  
+- **Catalogo talleres:Mejora funcionamiento botón Buscar "TODOS**
 
-- **Mejora funcionamiento botón Buscar "TODOS**
-
-- **Mejora visual y de funcionamiento en el boto de paginado**  
+- **Catalogo talleres:Mejora visual y de funcionamiento en el boto de paginado**  
  
 
  
