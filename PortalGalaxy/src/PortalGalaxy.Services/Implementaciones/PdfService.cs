@@ -4,6 +4,7 @@ using PortalGalaxy.Common.Response;
 using PortalGalaxy.Services.Interfaces;
 using PortalGalaxy.Services.Utils;
 using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 
 namespace PortalGalaxy.Services.Implementaciones;
 
@@ -40,36 +41,55 @@ public class PdfService : IPdfService
                         {
                             row.ConstantItem(120).Height(80).AlignCenter().PaddingTop(20).Text("LISTADO DE TALLERES").FontSize (15);
                         });
-                        page.Content().PaddingVertical(15).Column(col =>
-                        {
-                            col.Item().PaddingTop(10).Row(row =>
+                        page.Content()
+    .PaddingVertical(15)
+    .Column(col =>
+    {
+        // ENCABEZADO
+        col.Item()
+            .PaddingTop(10)
+            .Border(1)
+            .Background("#E7F1FA") // Azul suave
+            .Row(row =>
+            {
+                var headerStyle = TextStyle.Default.SemiBold().FontSize(11);
+
+                row.RelativeItem().AlignCenter().Text("ID").Style(headerStyle);
+                row.RelativeItem().AlignCenter().Text("Nombre").Style(headerStyle);
+                row.RelativeItem().AlignCenter().Text("Categoría").Style(headerStyle);
+                row.RelativeItem().AlignCenter().Text("Instructor").Style(headerStyle);
+                row.RelativeItem().AlignCenter().Text("Fecha").Style(headerStyle);
+                row.RelativeItem().AlignCenter().Text("Situación").Style(headerStyle);
+            });
+
+        // CONTENIDO
+        col.Item()
+            .Border(1)
+            .Row(row =>
+            {
+                row.RelativeItem().Column(c =>
+                {
+                    var rowStyle = TextStyle.Default.FontSize(10);
+
+                    foreach (var taller in data.Data)
+                    {
+                        c.Item()
+                            .BorderBottom(0.5f)
+                            .PaddingVertical(4)
+                            .Row(r =>
                             {
-                                row.RelativeItem().AlignCenter().Text("ID");
-                                row.RelativeItem().AlignCenter().Text("Nombre");
-                                row.RelativeItem().AlignCenter().Text("Categoria");
-                                row.RelativeItem().AlignCenter().Text("Instructor");
-                                row.RelativeItem().AlignCenter().Text("Fecha");
-                                row.RelativeItem().AlignCenter().Text("Situacion");
+                                r.RelativeItem().AlignCenter().Text(taller.Id.ToString()).Style(rowStyle);
+                                r.RelativeItem().Text(taller.Taller).Style(rowStyle);
+                                r.RelativeItem().Text(taller.Categoria).Style(rowStyle);
+                                r.RelativeItem().Text(taller.Instructor).Style(rowStyle);
+                                r.RelativeItem().AlignCenter().Text(taller.Fecha).Style(rowStyle);
+                                r.RelativeItem().AlignCenter().Text(taller.Situacion).Style(rowStyle);
                             });
-                            col.Item().Border(0.5f).Row(row =>
-                            {
-                                row.RelativeItem().Column(c =>
-                                {
-                                    foreach (var taller in data.Data)
-                                    {
-                                        c.Item().Row(r =>
-                                        {
-                                            r.RelativeItem().Text(taller.Id.ToString()).TextData();
-                                            r.RelativeItem().Text(taller.Taller).TextData();
-                                            r.RelativeItem().Text(taller.Categoria).TextData();
-                                            r.RelativeItem().Text(taller.Instructor).TextData();
-                                            r.RelativeItem().Text(taller.Fecha).TextData();
-                                            r.RelativeItem().Text(taller.Situacion).TextData();
-                                        });
-                                    }
-                                });
-                            });
-                        });
+                    }
+                });
+            });
+    });
+
                     });
                 });
 
