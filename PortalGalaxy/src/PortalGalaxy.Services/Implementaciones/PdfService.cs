@@ -38,7 +38,7 @@ public class PdfService : IPdfService
                         page.MarginRight(10);
                         page.Header().Row(row =>
                         {
-                            row.ConstantItem(120).Height(80).AlignCenter().PaddingTop(20).Text("LISTADO DE TALLERES");
+                            row.ConstantItem(120).Height(80).AlignCenter().PaddingTop(20).Text("LISTADO DE TALLERES").FontSize (15);
                         });
                         page.Content().PaddingVertical(15).Column(col =>
                         {
