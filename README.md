@@ -2,7 +2,7 @@
 ### TRABAJO FINAL 2025 CURSO .NET 9 - ALUMNO ANDRES GARAY REY
 
 
-- **talleres list page : Mejora visual**  
+- **Talleres list page : Mejora visual**  
 
 - **Catalogo talleres:Mejora visual botones**  
 
