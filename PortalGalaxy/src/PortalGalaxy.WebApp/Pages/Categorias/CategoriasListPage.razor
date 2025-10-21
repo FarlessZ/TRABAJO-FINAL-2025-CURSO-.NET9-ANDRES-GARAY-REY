@@ -1,0 +1,40 @@
+﻿@inject ICategoriaProxy Proxy
+@inject IToastService ToastService
+
+@page "/categorias/list"
+
+<ListaGenerica TItem="CategoriaDtoResponse" Lista="Lista" Titulo="Categorías">
+    <Cabeceras>
+        <th class="table-primary text-center">Id</th>
+        <th class="table-primary text-center">Nombre</th>
+    </Cabeceras>
+    <Detalles>
+        <td>@context.Id</td>
+        <td class="text-center">@context.Nombre</td>
+    </Detalles>
+</ListaGenerica>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+    public ICollection<CategoriaDtoResponse>? Lista { get; set; }
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            Lista = await Proxy.ListAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

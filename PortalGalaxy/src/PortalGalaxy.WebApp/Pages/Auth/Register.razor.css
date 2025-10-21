@@ -1,0 +1,22 @@
+.register-card {
+    max-width: 880px;
+    width: 100%;
+    border-radius: 1rem;
+    background: #ffffffcc;
+    backdrop-filter: blur(4px);
+}
+
+.register-card .form-floating > label {
+    color: #6c757d;
+}
+
+.password-wrapper .toggle-password {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.password-wrapper .form-control { border-right: 0; }
+
+@media (max-width: 576px) {
+    .register-card { max-width: 100%; padding: .25rem; }
+}

@@ -1,0 +1,29 @@
+﻿using System.Globalization;
+using System.Linq.Expressions;
+using PortalGalaxy.Entities;
+
+namespace PortalGalaxy.Repositories.Interfaces;
+
+public interface IRepositoryBase<TEntity> where TEntity : EntityBase
+{
+    Task<ICollection<TEntity>> ListAsync();
+
+    Task<TEntity?> FindAsync(int id);
+
+    Task AddAsync(TEntity entity);
+
+    Task UpdateAsync();
+
+    Task DeleteAsync(int id);
+
+    Task<ICollection<TEntity>> ListAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<ICollection<TInfo>> ListAsync<TInfo>(Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TInfo>> selector,
+        string? relations = null);
+
+    Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>(Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TInfo>> selector,
+        Expression<Func<TEntity, TKey>> orderBy,
+        int pageNumber = 1, int pageSize = 5,
+        string? relations = null);
+}

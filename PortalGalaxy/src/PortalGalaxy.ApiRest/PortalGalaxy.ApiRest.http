@@ -1,0 +1,10 @@
+@PortalGalaxy.ApiRest_HostAddress = https://localhost:7077
+
+GET {{PortalGalaxy.ApiRest_HostAddress}}/api/categorias/
+Accept: application/json
+
+###
+GET {{PortalGalaxy.ApiRest_HostAddress}}/api/categoriasList?filtro=a/
+Accept: application/json
+
+###

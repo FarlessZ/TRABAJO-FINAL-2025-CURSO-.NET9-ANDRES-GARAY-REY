@@ -1,0 +1,57 @@
+﻿.tarjeta {
+    width: 19rem;
+    height: 38rem;
+    margin: 1px;
+    border: 1px solid black;
+}
+
+    .tarjeta .tarjeta-imagen {
+        border-color: white;
+    }
+
+    .tarjeta .tarjeta-content {
+        align-items: center;
+    }
+/* Usamos '::deep' para que los estilos definidos aquí 
+  puedan "penetrar" y afectar a los elementos HTML 
+  dentro del componente hijo <DataPager>.
+*/
+
+.paginador-minimalista ::deep .pagination {
+    /* Quitamos cualquier sombra o fondo que pueda tener el contenedor */
+    box-shadow: none;
+    background-color: transparent;
+    padding: 0;
+    margin-top: 1rem; /* Le damos un poco de espacio */
+}
+
+.paginador-minimalista ::deep .page-item {
+    margin: 0 2px; /* Un pequeño espacio entre los botones */
+}
+
+.paginador-minimalista ::deep .page-link {
+    border: none !important; /* ¡Fundamental: quitamos todos los bordes! */
+    background-color: transparent !important; /* Sin fondo */
+    color: #0d6efd; /* Un color de enlace estándar (azul) */
+    border-radius: 4px; /* Bordes redondeados sutiles */
+    padding: 0.5rem 0.75rem;
+}
+
+/* Estilo para la página actual (activa) */
+.paginador-minimalista ::deep .page-item.active .page-link {
+    color: #fff !important; /* Texto blanco */
+    background-color: #0d6efd !important; /* Fondo azul */
+    font-weight: bold;
+}
+
+/* Estilo para botones deshabilitados (ej. "Anterior" cuando estás en la pág 1) */
+.paginador-minimalista ::deep .page-item.disabled .page-link {
+    color: #6c757d; /* Color gris */
+    background-color: transparent !important;
+}
+
+/* Efecto hover (cuando el mouse pasa por encima) */
+.paginador-minimalista ::deep .page-item:not(.active):not(.disabled) .page-link:hover {
+    background-color: #f0f0f0 !important; /* Un fondo gris muy claro */
+    color: #0a58ca;
+}

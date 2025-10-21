@@ -1,0 +1,70 @@
+﻿@inject SweetAlertService Swal
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<header class="shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark galaxy-navbar">
+        <div class="container-fluid">
+            <NavLink class="navbar-brand fw-semibold d-flex align-items-center" href="/">
+                <i class="bi bi-gem me-2"></i> PORTAL GALAXY
+            </NavLink>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <AuthorizeView>
+                        <Authorized>
+                            <li class="nav-item dropdown user-dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="avatar-placeholder me-2"><i class="bi bi-person-fill"></i></span>
+                                    <span class="d-inline-block text-truncate user-name" title="@context.User.Identity!.Name">@context.User.Identity!.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li class="dropdown-header small">Sesión</li>
+                                    <li>
+                                        <button class="dropdown-item d-flex align-items-center" @onclick="CerrarSesion">
+                                            <i class="bi bi-door-open me-2"></i> Cerrar sesión
+                                        </button>
+                                    </li>
+                                </ul>
+                            </li>
+                        </Authorized>
+                        <NotAuthorized>
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="login"><i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión</NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink class="btn btn-sm btn-outline-light ms-lg-2" href="register"><i class="bi bi-person-add me-1"></i> Registrarse</NavLink>
+                            </li>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+@code {
+
+    private async Task CerrarSesion()
+    {
+        var result = await Swal.FireAsync(new SweetAlertOptions
+        {
+            Title = "¿Desea salir?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            ConfirmButtonText = "Sí",
+            CancelButtonText = "Cancelar"
+        });
+
+        if (result.IsConfirmed)
+        {
+            var auth = (AuthenticationService)AuthenticationStateProvider;
+            await auth.Autenticar(null);
+            NavigationManager.NavigateTo("/", forceLoad: true);
+        }
+    }
+
+}

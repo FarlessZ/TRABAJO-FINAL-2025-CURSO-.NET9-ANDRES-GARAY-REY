@@ -1,0 +1,62 @@
+﻿@page "/taller/editar/{Id:int}"
+@inject ITallerProxy TallerProxy
+@inject ICategoriaProxy CategoriaProxy
+@inject IJsonProxy JsonProxy
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+
+<EditTallerComponent Categorias="Categorias" Situaciones="Situaciones" Titulo="Editar Taller" OnGuardar="OnGrabar" Request="Request" NombreInstructor="NombreInstructor" />
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public ICollection<CategoriaDtoResponse> Categorias { get; set; } = new List<CategoriaDtoResponse>();
+    public ICollection<SituacionModel> Situaciones { get; set; } = new List<SituacionModel>();
+    public bool IsLoading { get; set; }
+
+    public TallerDtoRequest Request { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categorias = await CategoriaProxy.ListAsync();
+        Situaciones = await JsonProxy.ListSituaciones();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            Request = await TallerProxy.FindByIdAsync(Id);
+
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);   
+        }
+    }
+
+    private async Task OnGrabar(TallerDtoRequest request)
+    {
+        try
+        {
+            IsLoading = true;
+
+            await TallerProxy.UpdateAsync(Id, Request);
+            ToastService.ShowSuccess("Se actualizó correctamente el taller");
+            NavigationManager.NavigateTo("taller/list");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

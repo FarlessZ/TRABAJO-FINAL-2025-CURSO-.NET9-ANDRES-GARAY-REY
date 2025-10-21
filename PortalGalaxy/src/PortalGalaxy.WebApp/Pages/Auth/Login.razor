@@ -1,0 +1,107 @@
+﻿@page "/login"
+@layout UserLayout
+@inject IToastService ToastService
+@inject IUserProxy UserProxy
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="d-flex justify-content-center mt-4">
+    <div class="card shadow-sm login-card border-0">
+        <div class="card-body p-4">
+            <div class="text-center mb-3">
+                <h3 class="fw-semibold mb-0">Iniciar Sesión</h3>
+                <small class="text-muted">Accede a tu cuenta para continuar</small>
+            </div>
+            <EditForm Model="LoginDtoRequest" OnValidSubmit="ValidLogin" OnInvalidSubmit="InvalidLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="mb-2" />
+
+                <div class="form-floating mb-3">
+                    <InputText id="usuario" class="form-control" placeholder="Usuario" autocomplete="username" @bind-Value="LoginDtoRequest.Usuario" />
+                    <label for="usuario">Usuario</label>
+                    <ValidationMessage For="() => LoginDtoRequest.Usuario" />
+                </div>
+
+                <div class="input-group form-floating mb-2 password-wrapper">
+                    <input class="form-control" id="password" placeholder="Clave" autocomplete="current-password" 
+                           type="@PasswordInputType" @bind-value="LoginDtoRequest.Password" />
+                    <label for="password">Clave</label>
+                    <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password" @onclick="TogglePasswordVisibility" aria-label="Mostrar / ocultar clave">
+                        <i class="bi @(ShowPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                    </button>
+                </div>
+                <div class="mb-2">
+                    <ValidationMessage For="() => LoginDtoRequest.Password" />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 small">
+                    <NavLink href="recover" class="text-decoration-none text-danger">Olvidé mi clave</NavLink>
+                    <NavLink href="register" class="text-decoration-none">Registrarme</NavLink>
+                </div>
+
+                <div class="d-grid mb-2">
+                    <button type="submit" class="btn btn-primary btn-lg" disabled="@IsLoading" aria-busy="@IsLoading">
+                        @if (IsLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        }
+                        <span>Ingresar</span>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    public LoginDtoRequest LoginDtoRequest { get; set; } = new();
+
+    public bool IsLoading { get; set; }
+
+    private bool ShowPassword { get; set; }
+    private string PasswordInputType => ShowPassword ? "text" : "password";
+
+    private void TogglePasswordVisibility()
+    {
+        ShowPassword = !ShowPassword;
+    }
+
+    private void InvalidLogin(EditContext context)
+    {
+        // Mensaje genérico al usuario; los detalles se muestran junto a cada campo
+        ToastService.ShowWarning("Revise los campos resaltados");
+    }
+
+    private async Task ValidLogin()
+    {
+        try
+        {
+            IsLoading = true;
+
+            var response = await UserProxy.Login(LoginDtoRequest);
+            if (response.Success)
+            {
+                var auth = (AuthenticationService)AuthenticationStateProvider;
+                await auth.Autenticar(response);
+
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                ToastService.ShowWarning(response.ErrorMessage!);
+            }
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

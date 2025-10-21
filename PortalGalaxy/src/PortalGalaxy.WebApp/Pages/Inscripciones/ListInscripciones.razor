@@ -1,0 +1,114 @@
+﻿@page "/inscripciones/list"
+@using Microsoft.AspNetCore.Authorization
+@inject IInscripcionProxy InscripcionProxy
+@inject IJsonProxy JsonProxy
+@inject IToastService ToastService
+@inject IJSRuntime JsRuntime
+@inject HttpClient HttpClient
+@inject IAlumnoProxy AlumnoProxy
+@inject ITallerProxy TallerProxy
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
+
+<h2 class="text-uppercase mb-5">Listado de Inscritos</h2>
+
+<div class="row">
+    <div class="col">
+        <div class="mb-3">
+            <label for="inscrito" class="form-label">Inscrito</label>
+            <input type="text" class="form-control" id="inscrito" @bind-value="BusquedaRequest.Inscrito" />
+        </div>
+    </div>
+    <div class="col-3">
+        <label for="taller" class="form-label">Taller</label>
+        <InputText class="form-control" id="taller" @bind-Value="BusquedaRequest.Taller" />
+    </div>
+    <div class="col-3">
+        <label for="situacion" class="form-label">Situacion</label>
+        <InputSelect id="situacion" class="form-select" @bind-Value="BusquedaRequest.Situacion">
+            <option>Todos</option>
+            @foreach (var item in Situaciones)
+            {
+                <option value="@item.Codigo">@item.Descripcion</option>
+            }
+        </InputSelect>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <label for="fechaInicio" class="form-label">Fecha de inicio</label>
+        <InputDate class="form-control" id="fechaInicio" @bind-Value="BusquedaRequest.FechaInicio" />
+    </div>
+    <div class="col-2">
+        <label for="fechaFin" class="form-label">Fecha de fin</label>
+        <InputDate class="form-control" id="fechaFin" @bind-Value="BusquedaRequest.FechaFin" />
+    </div>
+</div>
+<div class="row mt-3 justify-content-end">
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" @onclick="OnRefresh"><i class="bi bi-search me-1"></i>Buscar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i
+                class="bi bi-eraser-fill me-1"></i>Limpiar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="CargarTalleres" data-bs-toggle="modal"
+            data-bs-target="#alumnoModal"><i class="bi bi-plus-circle me-1"></i>Inscribir</button>
+    </div>
+</div>
+
+<div class="row mt-4">
+
+    <Grid @ref="Grilla" TItem="InscripcionDtoResponse" Class="table table-hover table-bordered table-striped"
+        AllowPaging="true" AllowSorting="true" Responsive="true" DataProvider="OnReadData"
+        HeaderRowCssClass="table-primary" PageSizeSelectorVisible="true" PageSize="PageSize">
+        <GridColumn TItem="InscripcionDtoResponse" HeaderText="#" PropertyName="@nameof(InscripcionDtoResponse.Id)"
+            TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="InscripcionDtoResponse" HeaderText="Nombre"
+            PropertyName="@nameof(InscripcionDtoResponse.Nombre)" TextAlignment="Alignment.Center">
+            @context.Nombre
+        </GridColumn>
+        <GridColumn TItem="InscripcionDtoResponse" HeaderText="Taller"
+            PropertyName="@nameof(InscripcionDtoResponse.Taller)" TextAlignment="Alignment.Center">
+            @context.Taller
+        </GridColumn>
+        <GridColumn TItem="InscripcionDtoResponse" HeaderText="Inscripción"
+            PropertyName="@nameof(InscripcionDtoResponse.Fecha)" TextAlignment="Alignment.Center">
+            @context.Fecha
+        </GridColumn>
+        <GridColumn TItem="InscripcionDtoResponse" HeaderText="Situación"
+            PropertyName="@nameof(InscripcionDtoResponse.Situacion)" TextAlignment="Alignment.Center">
+            @context.Situacion
+        </GridColumn>
+    </Grid>
+
+</div>
+<div class="row justify-content-end">
+    <div class="col-auto">
+        <button class="btn btn-outline-danger" @onclick="OnExportarPdf"><i
+                class="bi bi-filetype-pdf me-1"></i>Exportar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-success" @onclick="OnExportarExcel"><i
+                class="bi bi-file-excel me-1"></i>Exportar</button>
+    </div>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+<div class="modal fade" id="alumnoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h3 class="modal-title fs-5">Inscribir</h3>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <InscripcionMasivaComponent Alumnos="ListaAlumnos" Talleres="ListaTalleres" 
+                    BuscarEvent="BuscarAlumnos"  InscribirEvent="InscribirMasivo" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@page "/reportes/tallerporinstructor"
+@using Microsoft.AspNetCore.Authorization
+@inject ITallerProxy TallerProxy
+@inject IToastService ToastService
+@attribute [Authorize(Roles = Constantes.RolAdministrador)]
+
+
+<h3 class="text-primary">Talleres por Instructor</h3>
+
+<div class="row justify-content-end">
+    <div class="col offset-10">
+        <select id="anio" class="form-select" @onchange="CambiarAnio">
+            @foreach (var item in ListAnios)
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+    </div>
+</div>
+<div class="row justify-content-between">
+    <BarChart @ref="_barChart" Class="mb-4" />
+</div>

@@ -1,0 +1,115 @@
+﻿@page "/taller/inscritos/list"
+@using PortalGalaxy.WebApp.Xls
+
+@inject ITallerProxy TallerProxy
+@inject ICategoriaProxy CategoriaProxy
+@inject IJsonProxy JsonProxy
+@inject IToastService ToastService
+@inject IJSRuntime JsRuntime
+@inject HttpClient HttpClient
+
+<h2 class="text-uppercase mb-5">Inscritos por Taller</h2>
+
+<div class="row">
+    <div class="col">
+        <div class="mb-3">
+            <label for="instructor" class="form-label">Instructor</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="instructor" @bind-value="BusquedaRequest.Instructor" />
+                <span class="input-group-text" style="cursor:pointer" data-bs-toggle="modal"
+                    data-bs-target="#instructorModal">
+                    <i class="bi bi-person-bounding-box"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <label for="taller" class="form-label">Taller</label>
+        <InputText class="form-control" id="taller" @bind-Value="BusquedaRequest.Taller" />
+    </div>
+    <div class="col-3">
+        <label for="situacion" class="form-label">Situacion</label>
+        <InputSelect id="situacion" class="form-select" @bind-Value="BusquedaRequest.Situacion">
+            <option>Todos</option>
+            @foreach (var item in Situaciones)
+            {
+                <option value="@item.Codigo">@item.Descripcion</option>
+            }
+        </InputSelect>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+        <InputDate class="form-control" id="fechaInicio" @bind-Value="BusquedaRequest.FechaInicio" />
+    </div>
+    <div class="col-2">
+        <label for="fechaFin" class="form-label">Fecha de Fin</label>
+        <InputDate class="form-control" id="fechaFin" @bind-Value="BusquedaRequest.FechaFin" />
+    </div>
+</div>
+<div class="row mt-3 justify-content-end">
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" @onclick="OnRefresh"><i class="bi bi-search me-1"></i>Buscar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" @onclick="OnLimpiar"><i
+                class="bi bi-eraser-fill me-1"></i>Limpiar</button>
+    </div>
+</div>
+
+<div class="row mt-4">
+
+    <Grid @ref="Grilla" TItem="InscritosPorTallerDtoResponse" AllowPaging="true" AllowSorting="true"
+        Class="table table-hover table-bordered table-striped" PageSize="10" DataProvider="DataProvider"
+        HeaderRowCssClass="table-primary">
+
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Taller" HeaderText="Taller">
+            @context.Taller
+        </GridColumn>
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Categoria" HeaderText="Categoria">
+            @context.Categoria
+        </GridColumn>
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Instructor" HeaderText="Instructor">
+            @context.Instructor
+        </GridColumn>
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Fecha" HeaderText="Fecha">
+            @context.Fecha
+        </GridColumn>
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Situacion" HeaderText="Situacion">
+            @context.Situacion
+        </GridColumn>
+        <GridColumn TItem="InscritosPorTallerDtoResponse" PropertyName="Cantidad" HeaderText="Cantidad"
+                    TextAlignment="Alignment.Center">
+            <span class="cantidadview">@context.Cantidad</span>
+        </GridColumn>
+        
+    </Grid>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+<div class="row justify-content-end">
+    <div class="col-auto">
+        <button class="btn btn-outline-danger" @onclick="OnExportarPdf"><i
+                class="bi bi-filetype-pdf me-1"></i>Exportar</button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-success" @onclick="OnExportarExcel"><i
+                class="bi bi-file-excel me-1"></i>Exportar</button>
+    </div>
+</div>
+
+<div class="modal fade" id="instructorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h3 class="modal-title fs-5">Buscar Instructor</h3>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <ModalInstructor Categorias="Categorias" SeleccionInstructor="InstructorSeleccionado" />
+            </div>
+        </div>
+    </div>
+</div>

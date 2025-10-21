@@ -1,0 +1,59 @@
+﻿@typeparam TItem
+
+<div class="container">
+    <h2 class="mt-2">@Titulo</h2>
+    @if (Filtros != null)
+    {
+        <div class="mb-3">
+            @Filtros
+        </div>
+    }
+</div>
+
+@if (Lista == null || !Lista.Any())
+{
+    <div class="container my-2">
+        <p class="alert alert-danger">No hay registros para mostrar.</p>
+    </div>
+}
+else
+{
+    <div class="container mt-3">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr class="table-primary">
+                @Cabeceras
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Lista)
+            {
+                <tr>
+                    @Detalles(item)
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Parameter]
+    public ICollection<TItem>? Lista { get; set; }
+
+    [Parameter]
+    public RenderFragment? Filtros { get; set; }
+
+    [Parameter] 
+    [EditorRequired]
+    public RenderFragment Cabeceras { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment<TItem> Detalles { get; set; } = null!;
+
+}

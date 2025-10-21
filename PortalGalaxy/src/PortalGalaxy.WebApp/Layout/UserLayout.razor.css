@@ -1,0 +1,32 @@
+.auth-layout {
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.auth-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, #eef4ff, #d9e4ff 35%, #c2d4ff 60%, #b5cdfc 75%, #a4c4fa 90%);
+    opacity: .6;
+    pointer-events: none;
+}
+
+.auth-illustration {
+    max-height: 520px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.15));
+}
+
+@media (max-width: 991.98px) {
+    .auth-illustration { display: none; }
+}
+
+:global(.login-card),
+:global(.register-card) {
+    animation: fadeSlide .45s ease;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}

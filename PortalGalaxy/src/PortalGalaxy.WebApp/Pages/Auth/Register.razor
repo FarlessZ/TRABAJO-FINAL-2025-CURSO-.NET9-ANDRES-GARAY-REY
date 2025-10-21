@@ -1,0 +1,212 @@
+﻿@page "/register"
+@layout UserLayout
+@inject IToastService ToastService
+@inject IUserProxy UserProxy
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IJsonProxy JsonProxy
+
+<div class="d-flex justify-content-center mt-4">
+    <div class="card shadow-sm register-card border-0">
+        <div class="card-body p-4">
+            <div class="text-center mb-3">
+                <h3 class="fw-semibold mb-0">Crear cuenta</h3>
+                <small class="text-muted">Complete sus datos para registrarse</small>
+            </div>
+            <EditForm Model="Request" OnValidSubmit="ValidRegister" OnInvalidSubmit="InvalidRegister">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="mb-2" />
+
+                <div class="row g-2">
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <InputText id="usuario" class="form-control" placeholder="Usuario" 
+                            autocomplete="off" @bind-Value="Request.Usuario" />
+                            <label for="usuario">Usuario</label>
+                            <ValidationMessage For="() => Request.Usuario" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <InputText id="nombrecompleto" class="form-control" placeholder="Nombre completo" 
+                            autocomplete="off" @bind-Value="Request.NombreCompleto" />
+                            <label for="nombrecompleto">Nombre completo</label>
+                            <ValidationMessage For="() => Request.NombreCompleto" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <InputText id="nrodocumento" class="form-control" placeholder="Documento" autocomplete="off" @bind-Value="Request.NroDocumento" />
+                            <label for="nrodocumento">Documento</label>
+                            <ValidationMessage For="() => Request.NroDocumento" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <InputText id="telefono" class="form-control" placeholder="Teléfono" autocomplete="off" @bind-Value="Request.Telefono" />
+                            <label for="telefono">Teléfono</label>
+                            <ValidationMessage For="() => Request.Telefono" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <InputText id="email" type="email" class="form-control" placeholder="Email" autocomplete="off" @bind-Value="Request.Email" />
+                            <label for="email">Email</label>
+                            <ValidationMessage For="() => Request.Email" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="input-group form-floating password-wrapper">
+                            <input id="password" class="form-control" placeholder="Password" 
+                            type="@PasswordInputType" autocomplete="new-password" @bind-value="Request.Password" />
+                            <label for="password">Password</label>
+                            <button type="button" class="btn btn-outline-secondary border-start-0 toggle-password"
+                             @onclick="TogglePasswordVisibility" aria-label="Mostrar / ocultar password">
+                                <i class="bi @(ShowPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                            </button>
+                        </div>
+                        <ValidationMessage For="() => Request.Password" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-floating">
+                            <input id="confirmarpassword" class="form-control" 
+                            placeholder="Confirmar Password" type="@PasswordInputType" 
+                            autocomplete="new-password" @bind-value="Request.ConfirmPassword" />
+                            <label for="confirmarpassword">Confirmar Password</label>
+                        </div>
+                        <ValidationMessage For="() => Request.ConfirmPassword" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select class="form-select" @onchange="OnDepartamentoSelected" id="comboDpto">
+                                <option>-Seleccione-</option>
+                                @foreach (var item in Departamentos)
+                                {
+                                    <option value="@item.Codigo">@item.Nombre</option>
+                                }
+                            </select>
+                            <label for="comboDpto">Departamento</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select class="form-select" @onchange="OnProvinciaSelected" id="comboProvincia">
+                                <option>-Seleccione-</option>
+                                @foreach (var item in Provincias)
+                                {
+                                    <option value="@item.Codigo">@item.Nombre</option>
+                                }
+                            </select>
+                            <label for="comboProvincia">Provincia</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <InputSelect class="form-select" id="comboDistrito" @bind-Value="Request.CodigoDistrito">
+                                <option>-Seleccione-</option>
+                                @foreach (var item in Distritos)
+                                {
+                                    <option value="@item.Codigo">@item.Nombre</option>
+                                }
+                            </InputSelect>
+                            <label for="comboDistrito">Distrito</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <NavLink href="/login" class="text-decoration-none">Ya tengo cuenta</NavLink>
+                    <button type="submit" class="btn btn-primary btn-lg px-4" disabled="@IsLoading" aria-busy="@IsLoading">
+                        @if (IsLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        }
+                        <span>Registrar</span>
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
+
+@code {
+
+    public RegisterUserDto Request { get; set; } = new();
+
+    public ICollection<DepartamentoModel> Departamentos { get; set; } = new List<DepartamentoModel>();
+    public ICollection<ProvinciaModel> Provincias { get; set; } = new List<ProvinciaModel>();
+    public ICollection<DistritoModel> Distritos { get; set; } = new List<DistritoModel>();
+
+    public bool IsLoading { get; set; }
+    private bool ShowPassword { get; set; }
+    private string PasswordInputType => ShowPassword ? "text" : "password";
+
+    private void TogglePasswordVisibility() => ShowPassword = !ShowPassword;
+
+    private void InvalidRegister(EditContext context)
+    {
+        ToastService.ShowWarning("Revise los campos requeridos");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Departamentos = await JsonProxy.ListDepartamentos();
+    }
+
+    private async Task OnDepartamentoSelected(ChangeEventArgs args)
+    {
+        var codDpto = args.Value!.ToString()!;
+        if (args.Value is not null && !codDpto.StartsWith("-"))
+        {
+            Provincias = await JsonProxy.ListProvincias(codDpto);
+            Distritos = new List<DistritoModel>();
+            Request.CodigoDepartamento = codDpto;
+        }
+        else
+        {
+            Provincias = new List<ProvinciaModel>();
+            Distritos = new List<DistritoModel>();
+        }
+    }
+    
+    private async Task OnProvinciaSelected(ChangeEventArgs args)
+    {
+        var codProvincia = args.Value!.ToString()!;
+        if (args.Value is not null && !codProvincia.StartsWith("-"))
+        {
+            Distritos = await JsonProxy.ListDistritos(codProvincia);
+            Request.CodigoProvincia = codProvincia;
+        }
+        else
+        {
+            Distritos = new List<DistritoModel>();
+        }
+    }
+
+    private async Task ValidRegister()
+    {
+        try
+        {
+            IsLoading = true;
+
+            await UserProxy.Register(Request);
+
+            ToastService.ShowSuccess("Su cuenta ha sido creada");
+
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+}

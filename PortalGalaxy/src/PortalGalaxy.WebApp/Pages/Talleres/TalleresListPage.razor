@@ -1,0 +1,113 @@
+﻿@page "/taller/list"
+@inject ITallerProxy Proxy
+@inject IToastService ToastService
+@inject IJSRuntime JsRuntime
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject SweetAlertService Swal
+
+<div class="container mt-4">
+
+    <h3 class="fw-bold mb-4"><i class="bi bi-tools me-2"></i>Gestión de Talleres</h3>
+
+    <!-- Filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            Filtros de búsqueda
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <label for="nombre" class="form-label fw-semibold">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Nombre del taller..." @bind-value="Nombre" />
+                </div>
+
+                <div class="col-3">
+                    <label for="categoria" class="form-label fw-semibold">Categoría</label>
+                    <InputSelect id="categoria" class="form-select" @bind-Value="CategoriaId">
+                        <option value="">-- Seleccione --</option>
+                        @foreach (var categoria in Categorias)
+                        {
+                            <option value="@categoria.Id">@categoria.Nombre</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="col-3">
+                    <label for="situacion" class="form-label fw-semibold">Situación</label>
+                    <InputSelect id="situacion" class="form-select" @bind-Value="Situacion">
+                        <option value="">-- Seleccione --</option>
+                        @foreach (var item in Situaciones)
+                        {
+                            <option value="@item.Codigo">@item.Descripcion</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col d-flex gap-2">
+                    <button type="button" class="btn btn-primary" @onclick="OnRefresh"><i class="bi bi-search me-1"></i>Buscar</button>
+                    <button type="button" class="btn btn-outline-primary" @onclick="OnLimpiar"><i class="bi bi-eraser-fill me-1"></i>Limpiar</button>
+                </div>
+                <div class="col text-end">
+                    <button type="button" class="btn btn-success" @onclick="OnNuevo"><i class="bi bi-plus-circle me-1"></i>Nuevo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white fw-bold">
+            Listado de Talleres
+        </div>
+        <div class="card-body">
+            <Grid @ref="Grilla" TItem="TallerDtoResponse" Class="table table-hover table-bordered table-striped"
+                  AllowPaging="true" AllowSorting="true" Responsive="true" DataProvider="OnReadData"
+                  HeaderRowCssClass="table-primary" PageSizeSelectorVisible="true" PageSize="PageSize">
+
+                <GridColumn TItem="TallerDtoResponse" PropertyName="@nameof(TallerDtoResponse.Taller)" HeaderText="Nombre" Sortable="true">
+                    @context.Taller
+                </GridColumn>
+
+                <GridColumn TItem="TallerDtoResponse" PropertyName="@nameof(TallerDtoResponse.Categoria)" HeaderText="Categoría" Sortable="true">
+                    @context.Categoria
+                </GridColumn>
+
+                <GridColumn TItem="TallerDtoResponse" PropertyName="@nameof(TallerDtoResponse.Instructor)" HeaderText="Instructor" Sortable="true">
+                    @context.Instructor
+                </GridColumn>
+
+                <GridColumn TItem="TallerDtoResponse" PropertyName="@nameof(TallerDtoResponse.Fecha)" HeaderText="Fecha" Sortable="true">
+                    @context.Fecha
+                </GridColumn>
+
+                <GridColumn TItem="TallerDtoResponse" PropertyName="@nameof(TallerDtoResponse.Situacion)" HeaderText="Situación" Sortable="true">
+                    @context.Situacion
+                </GridColumn>
+
+                <GridColumn TItem="TallerDtoResponse" HeaderText="Acciones">
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="() => OnEditar(context.Id)">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => OnEliminar(context.Id)">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </GridColumn>
+
+            </Grid>
+        </div>
+    </div>
+
+    <!-- Botones exportación -->
+    <div class="text-end mt-3">
+        <button class="btn btn-danger me-2" @onclick="OnExportarPdf"><i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF</button>
+        <button class="btn btn-success" @onclick="OnExportarExcel"><i class="bi bi-file-excel me-1"></i>Excel</button>
+    </div>
+
+</div>
+
+<LoadingComponent IsLoading="IsLoading" />
