@@ -8,7 +8,9 @@
 
 - **Catalogo talleres:Mejora funcionamiento botón Buscar "TODOS**
 
-- **Catalogo talleres:Mejora visual y de funcionamiento en el boto de paginado**  
+- **Catalogo talleres:Mejora visual y de funcionamiento en el boto de paginado**
+  
+- **PDF Services: Se le dio formato al reporte PDF**  
  
 
  
